@@ -1,0 +1,51 @@
+version: "3.7"
+services:
+  builder:
+    build:
+      context: ./
+      dockerfile: Dockerfile.local
+    container_name: todo
+    ports:
+      - 4000:3000
+    volumes:
+      - .:/app
+      - $GOPATH/pkg/mod:/go/pkg/mod
+    environment:
+      - GOPATH=/go
+      - GOARCH=amd64
+      - GOOS=linux
+      - CGO_ENABLED=0
+    command: "make serve"
+    working_dir: /app
+    networks:
+      - todo
+  db:
+    image: postgres
+    networks:
+      todo:
+        aliases:
+          - database
+    environment:
+      POSTGRES_DB: demo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "35432:5432"
+  migrate:
+    image: migrate/migrate
+    networks:
+      - todo
+    volumes:
+      - ./migrations:/migrations
+    command: # TODO: wait for pg before running migrations
+      [
+        "-path",
+        "/migrations",
+        "-database",
+        "postgres://postgres:postgres@database:5432/demo?sslmode=disable",
+        "up",
+      ]
+    links:
+      - db
+networks:
+  todo:
