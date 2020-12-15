@@ -9,9 +9,18 @@ type Todo struct {
 
 //go:generate mockgen -destination=mocks/mock_todos_repository.go -package=mocks . TodosRepository
 type TodosRepository interface {
-	GetTodo(id int) (*Todo, error)
+	SearchTodos() (*[]Todo, error)
+	CreateTodo(todo Todo) (int, error)
+	ReadTodo(id int) (*Todo, error)
+	UpdateTodo(id int, todo Todo) (int64, error)
+	DeleteTodo(id int) (int64, error) // TODO: todo archive (soft delete)
 }
 
 //go:generate mockgen -destination=mocks/mock_todos_service.go -package=mocks . TodosService
 type TodosService interface {
+	SearchTodos() (*[]Todo, error)
+	CreateTodo(todo Todo) (int, error)
+	ReadTodo(id int) (*Todo, error)
+	UpdateTodo(id int, todo Todo) error
+	DeleteTodo(id int) error
 }
