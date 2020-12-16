@@ -10,6 +10,10 @@ import (
 	"github.com/mrsufgi/todo_api/internal/todos/service"
 )
 
+func String(x string) *string {
+	return &x
+}
+
 func TestNewTodoService(t *testing.T) {
 	type args struct {
 		tr domain.TodosRepository
@@ -83,7 +87,7 @@ func Test_todosService_CreateTodo(t *testing.T) {
 		want    int
 		wantErr bool
 	}{
-		{"happy create todo", fields{tr: tr}, args{domain.Todo{ID: 0, Done: false, Name: "Test", Details: "None"}}, 0, false},
+		{"happy create todo", fields{tr: tr}, args{domain.Todo{ID: 0, Done: false, Name: String("Test"), Details: String("None")}}, 0, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -122,7 +126,8 @@ func Test_todosService_ReadTodo(t *testing.T) {
 		want    *domain.Todo
 		wantErr bool
 	}{
-		{"happy read todo", fields{tr: tr}, args{id: 0}, &domain.Todo{ID: 0, Done: false, Name: "Test", Details: "None"}, false},
+		{"happy read todo", fields{tr: tr}, args{id: 0},
+			&domain.Todo{ID: 0, Done: false, Name: String("Test"), Details: String("None")}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -161,9 +166,10 @@ func Test_todosService_UpdateTodo(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
+		want    int64
 		wantErr bool
 	}{
-		{"happy update todo", fields{tr: tr}, args{id: 0, todo: domain.Todo{Done: true}}, false},
+		{"happy update todo", fields{tr: tr}, args{id: 0, todo: domain.Todo{Done: true}}, 1, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -171,8 +177,13 @@ func Test_todosService_UpdateTodo(t *testing.T) {
 				tt.fields.tr,
 			)
 			tr.EXPECT().UpdateTodo(tt.args.id, tt.args.todo).Return(int64(1), nil)
-			if err := ts.UpdateTodo(tt.args.id, tt.args.todo); (err != nil) != tt.wantErr {
+			got, err := ts.UpdateTodo(tt.args.id, tt.args.todo)
+			if (err != nil) != tt.wantErr {
 				t.Errorf("todosService.UpdateTodo() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("todosService.UpdateTodo() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -193,9 +204,10 @@ func Test_todosService_DeleteTodo(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
+		want    int64
 		wantErr bool
 	}{
-		{"happy delete todo", fields{tr: tr}, args{id: 0}, false},
+		{"happy delete todo", fields{tr: tr}, args{id: 0}, 1, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -203,8 +215,13 @@ func Test_todosService_DeleteTodo(t *testing.T) {
 				tt.fields.tr,
 			)
 			tr.EXPECT().DeleteTodo(tt.args.id).Return(int64(1), nil)
-			if err := ts.DeleteTodo(tt.args.id); (err != nil) != tt.wantErr {
-				t.Errorf("todosService.DeleteTodo() error = %v, wantErr %v", err, tt.wantErr)
+			got, err := ts.DeleteTodo(tt.args.id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("todosService.UpdateTodo() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("todosService.UpdateTodo() = %v, want %v", got, tt.want)
 			}
 		})
 	}

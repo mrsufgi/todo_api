@@ -1,3 +1,5 @@
+// +build live
+
 package repository_test
 
 // NOT a unit test suit, uses a real db. prevent it from running with unit.
@@ -13,8 +15,21 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/mrsufgi/todo_api/internal/domain"
 	repository "github.com/mrsufgi/todo_api/internal/todos/repository/pg"
+	helpers "github.com/mrsufgi/todo_api/pkg/helpers"
 	log "github.com/sirupsen/logrus"
 )
+
+func String(x string) *string {
+	return &x
+}
+
+func getConn() *sqlx.DB {
+	conn, err := sqlx.Connect("postgres", helpers.GetConnectionString())
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return conn
+}
 
 // TODO: create function to create PG connection from env variables so it works with docker/local pg.
 func TestNewPgTodosRepository(t *testing.T) {
@@ -38,12 +53,7 @@ func TestNewPgTodosRepository(t *testing.T) {
 }
 
 func Test_pgTodosRepository_ReadTodo(t *testing.T) {
-	conf, err := sqlx.Connect("postgres", "host=localhost port=35432 user=postgres password=postgres dbname=demo sslmode=disable")
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	tr := repository.NewPgTodosRepository(conf)
+	tr := repository.NewPgTodosRepository(getConn())
 
 	type args struct {
 		id int
@@ -55,7 +65,7 @@ func Test_pgTodosRepository_ReadTodo(t *testing.T) {
 		want    *domain.Todo
 		wantErr bool
 	}{
-		{"happy todo spec", tr, args{id: 0}, &domain.Todo{ID: 0, Done: false, Name: "ori", Details: "mehhh"}, false},
+		{"happy todo spec", tr, args{id: 0}, &domain.Todo{ID: 0, Done: false, Name: String("ori"), Details: String("mehhh")}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -78,10 +88,6 @@ func Test_pgTodosRepository_SearchTodos(t *testing.T) {
 	type args struct {
 		id int
 	}
-	conn, err := sqlx.Connect("postgres", "host=localhost port=35432 user=postgres password=postgres dbname=demo sslmode=disable")
-	if err != nil {
-		log.Fatalln(err)
-	}
 
 	tests := []struct {
 		name    string
@@ -90,7 +96,7 @@ func Test_pgTodosRepository_SearchTodos(t *testing.T) {
 		want    []domain.Todo
 		wantErr bool
 	}{
-		{"happy todo spec", fields{conn: conn}, args{}, []domain.Todo{{}}, false},
+		{"happy todo spec", fields{conn: getConn()}, args{}, []domain.Todo{{}}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -118,10 +124,7 @@ func Test_pgTodosRepository_CreateTodo(t *testing.T) {
 	type args struct {
 		todo domain.Todo
 	}
-	conn, err := sqlx.Connect("postgres", "host=localhost port=35432 user=postgres password=postgres dbname=demo sslmode=disable")
-	if err != nil {
-		log.Fatalln(err)
-	}
+
 	tests := []struct {
 		name    string
 		fields  fields
@@ -129,7 +132,7 @@ func Test_pgTodosRepository_CreateTodo(t *testing.T) {
 		want    int
 		wantErr bool
 	}{
-		{"happy todo spec", fields{conn: conn}, args{domain.Todo{Name: "test", Details: "test"}}, 1, false},
+		{"happy todo spec", fields{conn: getConn()}, args{domain.Todo{Name: String("test"), Details: String("test")}}, 1, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -156,10 +159,7 @@ func Test_pgTodosRepository_UpdateTodo(t *testing.T) {
 		id   int
 		todo domain.Todo
 	}
-	conn, err := sqlx.Connect("postgres", "host=localhost port=35432 user=postgres password=postgres dbname=demo sslmode=disable")
-	if err != nil {
-		log.Fatalln(err)
-	}
+
 	tests := []struct {
 		name    string
 		fields  fields
@@ -167,8 +167,8 @@ func Test_pgTodosRepository_UpdateTodo(t *testing.T) {
 		want    int64
 		wantErr bool
 	}{
-		{"happy todo spec", fields{conn: conn},
-			args{id: 1, todo: domain.Todo{Name: "updated", Details: "updated", Done: true}}, 1, false},
+		{"happy todo spec", fields{conn: getConn()}, args{id: 1,
+			todo: domain.Todo{Name: String("updated"), Details: String("updated"), Done: true}}, 1, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -194,10 +194,7 @@ func Test_pgTodosRepository_DeleteTodo(t *testing.T) {
 	type args struct {
 		id int
 	}
-	conn, err := sqlx.Connect("postgres", "host=localhost port=35432 user=postgres password=postgres dbname=demo sslmode=disable")
-	if err != nil {
-		log.Fatalln(err)
-	}
+
 	tests := []struct {
 		name    string
 		fields  fields
@@ -205,7 +202,7 @@ func Test_pgTodosRepository_DeleteTodo(t *testing.T) {
 		want    int64
 		wantErr bool
 	}{
-		{"happy todo spec", fields{conn: conn}, args{id: 1}, 1, false},
+		{"happy todo spec", fields{conn: getConn()}, args{id: 1}, 1, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

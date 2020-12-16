@@ -49,11 +49,12 @@ func (mr *MockTodosServiceMockRecorder) CreateTodo(arg0 interface{}) *gomock.Cal
 }
 
 // DeleteTodo mocks base method
-func (m *MockTodosService) DeleteTodo(arg0 int) error {
+func (m *MockTodosService) DeleteTodo(arg0 int) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteTodo", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // DeleteTodo indicates an expected call of DeleteTodo
@@ -93,11 +94,12 @@ func (mr *MockTodosServiceMockRecorder) SearchTodos() *gomock.Call {
 }
 
 // UpdateTodo mocks base method
-func (m *MockTodosService) UpdateTodo(arg0 int, arg1 domain.Todo) error {
+func (m *MockTodosService) UpdateTodo(arg0 int, arg1 domain.Todo) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateTodo", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // UpdateTodo indicates an expected call of UpdateTodo

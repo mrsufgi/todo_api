@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/jmoiron/sqlx"
 	"github.com/mrsufgi/todo_api/internal/domain"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -49,9 +50,8 @@ func (tr *pgTodosRepository) CreateTodo(todo domain.Todo) (int, error) {
 	return id, nil
 }
 
-// TODO: fix update missing values removes old values
 func (tr *pgTodosRepository) UpdateTodo(id int, todo domain.Todo) (int64, error) {
-	query := `UPDATE todos SET name=$2, details=$3, done=$4 WHERE todo_id=$1`
+	query := `UPDATE todos SET name=COALESCE($2, name), details=COALESCE($3, details), done=COALESCE($4, done) WHERE todo_id=$1`
 	res, err := tr.conn.Exec(query, id, todo.Name, todo.Details, todo.Done)
 
 	if err != nil {

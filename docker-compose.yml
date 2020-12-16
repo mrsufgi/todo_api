@@ -33,6 +33,7 @@ services:
       - "35432:5432"
   migrate:
     image: migrate/migrate
+    container_name: migrate
     networks:
       - todo
     volumes:

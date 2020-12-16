@@ -1,10 +1,10 @@
 package domain
 
 type Todo struct {
-	ID      int    `db:"todo_id" json:"id,omitempty"`
-	Done    bool   `db:"done" json:"done"` // note: consider using a pointer (if u want omitempty)
-	Name    string `db:"name" json:"name,omitempty"`
-	Details string `db:"details" json:"details,omitempty"`
+	ID      int     `db:"todo_id" json:"id,omitempty"`
+	Done    bool    `db:"done" json:"done"` // note: consider using a pointer (if u want omitempty)
+	Name    *string `db:"name" json:"name"`
+	Details *string `db:"details" json:"details"`
 }
 
 //go:generate mockgen -destination=mocks/mock_todos_repository.go -package=mocks . TodosRepository

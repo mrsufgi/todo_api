@@ -14,11 +14,10 @@ integration-test:
 	docker-compose -f docker-compose.yml -f docker-compose.test.yml up --abort-on-container-exit
 	docker-compose -f docker-compose.yml -f docker-compose.test.yml down
 
-run-migrations: 
-	# migrations script
 run-integration-test: 
 	go test --tags="integration" -v ./...
 
+run-unit-test: migrate-up unit-test migrate-down
 unit-test:
 	go test --tags="unit" -v ./...
 
@@ -57,3 +56,16 @@ lint-prepare:
 # read more about linting in: https://github.com/golangci/golangci-lint#config-file - maybe use config file?
 lint:
 	./bin/golangci-lint run
+
+
+# Note: temporary until we move migrations to file
+dbname := $(or $(POSTGRES_DB),postgres)
+dbuser := $(or $(POSTGRES_USER),postgres)
+dbpassword := $(or $(POSTGRES_PASSWORD),)
+
+migrate-up:
+	migrate -path migrations -database "postgresql://${dbuser}:${dbpassword}@localhost:5432/${dbname}?sslmode=disable" -verbose up
+
+migrate-down:
+	migrate -path migrations -database "postgresql://${dbuser}:${dbpassword}@localhost:5432/${dbname}?sslmode=disable" -verbose down
+
