@@ -19,7 +19,7 @@ func NewTodoService(tr domain.TodosRepository) domain.TodosService {
 func (ts *todosService) SearchTodos() (*[]domain.Todo, error) {
 	res, err := ts.tr.SearchTodos()
 	if len(*res) == 0 {
-		log.Info("unable to search todos")
+		log.Info("no todos found")
 	}
 	return res, err
 }

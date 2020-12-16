@@ -30,12 +30,28 @@ func NewTodosHandler(r *httprouter.Router, ts domain.TodosService) *TodosHandler
 		TService: ts,
 	}
 
+	r.GET("/todos", handler.searchTodos)
 	r.GET("/todos/:id", handler.readTodo)
 	r.POST("/todos", handler.createTodo)
 	r.PUT("/todos/:id", handler.updateTodo)
 	r.DELETE("/todos/:id", handler.deleteTodo)
 
 	return handler
+}
+
+func (p *TodosHandler) searchTodos(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	w.Header().Set("Content-Type", "application/json")
+
+	rec, err := p.TService.SearchTodos()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Errorf("unable to read todo %v", err)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(rec); err != nil {
+		log.Errorf("unable to encode response %v", err)
+	}
 }
 
 func (p *TodosHandler) readTodo(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {

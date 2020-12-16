@@ -82,6 +82,21 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "search todos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:4000/todos",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "4000",
+          "path": ["todos"]
+        }
+      },
+      "response": []
     }
   ],
   "protocolProfileBehavior": {}
