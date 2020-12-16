@@ -45,7 +45,7 @@ func main() {
 	}
 
 	// handler setup his own router
-	thd.NewTodoHandler(router, mservice)
+	thd.NewTodosHandler(router, mservice)
 
 	go func() {
 		log.Infof("start http server on port %s", port)

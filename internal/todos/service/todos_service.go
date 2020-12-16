@@ -42,18 +42,20 @@ func (ts *todosService) ReadTodo(id int) (*domain.Todo, error) {
 	return res, nil
 }
 
-func (ts *todosService) UpdateTodo(id int, todo domain.Todo) error {
+func (ts *todosService) UpdateTodo(id int, todo domain.Todo) (int64, error) {
 	res, err := ts.tr.UpdateTodo(id, todo)
-	if res != 1 {
+	if res != 1 || err != nil {
 		log.Infof("unable to update todo: %v, %v", id, todo)
+		return 0, err
 	}
-	return err
+	return res, err
 }
 
-func (ts *todosService) DeleteTodo(id int) error {
+func (ts *todosService) DeleteTodo(id int) (int64, error) {
 	res, err := ts.tr.DeleteTodo(id)
-	if res != 1 {
+	if res != 1 || err != nil {
 		log.Infof("unable to delete todo: %v", id)
+		return 0, err
 	}
-	return err
+	return res, err
 }
