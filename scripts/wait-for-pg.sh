@@ -6,7 +6,7 @@ set -e
 TIMEOUT=15
 DELAY=10
 
-host="$1"
+host="${1:-db}"
 shift
 shift
 cmd="$@"
@@ -14,13 +14,13 @@ cmd="$@"
 sleep $DELAY
 
 for i in `seq $TIMEOUT` ; do
-  # TODO: if host is empty, remove endpoint-url 
-  if !</dev/tcp/db/5432 > /dev/null 2>&1; then 
-    >&2 echo "Kinesis is up - executing command"
+  # change to psql
+  if /dev/tcp/${host}/35432 >/dev/null 2>&1; then 
+    >&2 echo "pg is up - executing command"
     exec $cmd
     exit 0
   else 
-    >&2 echo "Kinesis is unavailable - sleeping"
+    >&2 echo "pg is unavailable - sleeping"
     sleep 1
   fi
 done

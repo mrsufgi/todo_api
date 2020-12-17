@@ -27,6 +27,7 @@ make start
 ```
 
 it will create everything you need and run it.
+the server is running on: `localhost:4000`
 caveat: you will need to run migrations (actually rerun the migration container):
 
 ```bash
@@ -48,8 +49,10 @@ if you want to test "restarts" you can just restart `todos` container :)
 
 ## Using the API
 
-The easiest way would be importing the postman json file that describe the api.
+The easiest way would be importing the POSTMAN json file that describe the api.
 Otherwise the api is CRUD using REST:
+
+(assuming you ran it using `make start` the host is <b>http://localhost:4000</b>)
 
 ```http
 GET /todos/?q=

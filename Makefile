@@ -62,10 +62,12 @@ lint:
 dbname := $(or $(POSTGRES_DB),postgres)
 dbuser := $(or $(POSTGRES_USER),postgres)
 dbpassword := $(or $(POSTGRES_PASSWORD),)
+dbhost :=  $(or $(POSTGRES_HOST), localhost)
+dbport :=  $(or $(POSTGRES_PORT), 5432)
 
 migrate-up:
-	migrate -path migrations -database "postgresql://${dbuser}:${dbpassword}@localhost:5432/${dbname}?sslmode=disable" -verbose up
+	migrate -path migrations -database "postgresql://${dbuser}:${dbpassword}@${dbhost}:${dbport}/${dbname}?sslmode=disable" -verbose up
 
 migrate-down:
-	migrate -path migrations -database "postgresql://${dbuser}:${dbpassword}@localhost:5432/${dbname}?sslmode=disable" -verbose down
+	migrate -path migrations -database "postgresql://${dbuser}:${dbpassword}@${dbhost}:${dbport}/${dbname}?sslmode=disable" -verbose down
 
