@@ -2,13 +2,14 @@
 
 This is still pretty much WIP, needs more tests (missing integration tests), fixing live tests (they work but will yield inconsistent results, becuase they live).
 
-- [] fix docker-compose for integration-test
-- [] fix migration for docker-compose (wait for postgres script)
-- [] add more API test (handler)
-- [] add more unit tests cases (error path)
-- [] cleanup makefile
-- [] fix lint issues
-- [] improve docs
+⬜️ protobuf support
+⬜️ fix docker-compose for integration-test
+⬜️ fix migration for docker-compose (wait for postgres script)
+⬜️ add more API test (handler)
+⬜️ add more unit tests cases (error path)
+⬜️ cleanup makefile
+⬜️ fix lint issues
+⬜️ improve docs
 
 ### Prerequisites
 
